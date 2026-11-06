@@ -1,0 +1,36 @@
+{
+  "rows": [
+    {
+      "name": "norm_layernorm",
+      "threads": 8,
+      "config": {},
+      "params": 3064128,
+      "tokens_per_step": 3072,
+      "ms_per_step": 578.3,
+      "tokens_per_s": 5312.1,
+      "round_ms": [
+        578.3,
+        585.0,
+        557.3
+      ],
+      "load_avg": 5.76
+    },
+    {
+      "name": "norm_rmsnorm",
+      "threads": 8,
+      "config": {
+        "norm_type": "rmsnorm"
+      },
+      "params": 3062592,
+      "tokens_per_step": 3072,
+      "ms_per_step": 572.9,
+      "tokens_per_s": 5362.5,
+      "round_ms": [
+        572.9,
+        571.9,
+        621.2
+      ],
+      "load_avg": 5.76
+    }
+  ]
+}

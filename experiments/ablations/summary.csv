@@ -1,0 +1,6 @@
+name,pos_emb,n_layer,norm,steps_done,num_params,final_val_loss,final_train_loss,train_eval_loss,wall_clock_s,tokens_per_s,convergence_step_95pct,diverged
+base,learned,4,pre,1200,3064128,5.6889,5.7754,5.6752,1301,2914,900,False
+rope,rope,4,pre,1200,3027264,5.3069,5.3748,5.3055,1042,3655,900,False
+depth2,learned,2,pre,1200,2174400,5.8595,5.9274,5.8431,799,4749,900,False
+depth6,learned,6,pre,1200,3953856,5.6521,5.7367,5.6413,4589,819,900,False
+postln,learned,4,post,1200,3064128,5.8109,5.8788,5.7941,1088,3485,1000,False

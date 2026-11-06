@@ -1,0 +1,149 @@
+{
+  "rows": [
+    {
+      "name": "pos_learned",
+      "threads": 8,
+      "config": {
+        "pos_emb": "learned"
+      },
+      "params": 3064128,
+      "tokens_per_step": 3072,
+      "ms_per_step": 749.0,
+      "tokens_per_s": 4101.3,
+      "round_ms": [
+        930.2,
+        749.0,
+        746.6
+      ],
+      "load_avg": 19.41
+    },
+    {
+      "name": "pos_rope",
+      "threads": 8,
+      "config": {
+        "pos_emb": "rope"
+      },
+      "params": 3027264,
+      "tokens_per_step": 3072,
+      "ms_per_step": 771.2,
+      "tokens_per_s": 3983.4,
+      "round_ms": [
+        910.8,
+        771.2,
+        767.8
+      ],
+      "load_avg": 19.41
+    },
+    {
+      "name": "depth_L2",
+      "threads": 8,
+      "config": {
+        "n_layer": 2
+      },
+      "params": 2174400,
+      "tokens_per_step": 3072,
+      "ms_per_step": 460.4,
+      "tokens_per_s": 6672.5,
+      "round_ms": [
+        572.6,
+        453.3,
+        460.4
+      ],
+      "load_avg": 19.41
+    },
+    {
+      "name": "depth_L4",
+      "threads": 8,
+      "config": {
+        "n_layer": 4
+      },
+      "params": 3064128,
+      "tokens_per_step": 3072,
+      "ms_per_step": 761.1,
+      "tokens_per_s": 4036.2,
+      "round_ms": [
+        909.4,
+        737.7,
+        761.1
+      ],
+      "load_avg": 19.41
+    },
+    {
+      "name": "depth_L6",
+      "threads": 8,
+      "config": {
+        "n_layer": 6
+      },
+      "params": 3953856,
+      "tokens_per_step": 3072,
+      "ms_per_step": 1031.3,
+      "tokens_per_s": 2978.7,
+      "round_ms": [
+        1240.4,
+        1031.3,
+        993.3
+      ],
+      "load_avg": 19.41
+    },
+    {
+      "name": "threads_4",
+      "threads": 4,
+      "config": {},
+      "params": 3064128,
+      "tokens_per_step": 3072,
+      "ms_per_step": 881.9,
+      "tokens_per_s": 3483.3,
+      "round_ms": [
+        1012.8,
+        881.9,
+        872.2
+      ],
+      "load_avg": 19.41
+    },
+    {
+      "name": "threads_8",
+      "threads": 8,
+      "config": {},
+      "params": 3064128,
+      "tokens_per_step": 3072,
+      "ms_per_step": 816.4,
+      "tokens_per_s": 3763.0,
+      "round_ms": [
+        983.6,
+        816.4,
+        719.6
+      ],
+      "load_avg": 19.41
+    },
+    {
+      "name": "threads_12",
+      "threads": 12,
+      "config": {},
+      "params": 3064128,
+      "tokens_per_step": 3072,
+      "ms_per_step": 2510.6,
+      "tokens_per_s": 1223.6,
+      "round_ms": [
+        2744.7,
+        2510.6,
+        774.5
+      ],
+      "load_avg": 19.41
+    },
+    {
+      "name": "threads_16",
+      "threads": 16,
+      "config": {},
+      "params": 3064128,
+      "tokens_per_step": 3072,
+      "ms_per_step": 4065.2,
+      "tokens_per_s": 755.7,
+      "round_ms": [
+        4065.2,
+        4088.7,
+        3375.1
+      ],
+      "load_avg": 19.41
+    }
+  ]
+}

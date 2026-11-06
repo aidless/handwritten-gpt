@@ -1,0 +1,26 @@
+experiment,config,params,steps,final_val_loss,wall_seconds,tokens_per_sec,notes
+main_tiny,L6/d256/H8/ctx256;pos=learned; norm=pre/layernorm,6467840,3000,4.9938,6574.8,1438,主实验；batch=12；warmup=200；3000 步 ≈3.1 epoch
+ablate_base,L4/d192/H6/ctx192;pos=learned; norm=pre/layernorm,3064128,1200,5.6889,1300.9,2914,消融基线；1200 步统一预算
+ablate_rope,L4/d192/H6/ctx192;pos=rope; norm=pre/layernorm,3027264,1200,5.3069,1041.6,3655,只换位置编码：RoPE
+ablate_depth2,L2/d192/H6/ctx192;pos=learned; norm=pre/layernorm,2174400,1200,5.8595,799.2,4749,只换深度：L2
+ablate_depth6,L6/d192/H6/ctx192;pos=learned; norm=pre/layernorm,3953856,1200,5.6521,4589.2,819,只换深度：L6；该轮撞上外部负载尖峰，wall 不可比
+ablate_postln,L4/d192/H6/ctx192;pos=learned; norm=post/layernorm,3064128,1200,5.8109,1088.4,3485,只换归一化位置：Post-LN
+rmsnorm_tiny,L6/d256/H8/ctx256;pos=learned; norm=pre/rmsnorm,6464768,3000,4.9983,5004.0,1890,只换归一化类型：RMSNorm；与 main_tiny 同配置同步数
+main_tiny_seed42,L6/d256/H8/ctx256;pos=learned; norm=pre/layernorm,6467840,3000,5.0205,11828.2,800,主实验第二 seed（seed=42）；与 main_tiny 仅 seed 不同；val 差=+0.0267；收敛步=2200；墙钟受负载污染不可比；产物在 .local_runs/ 未入库
+kv_cache_gen50,tiny; ctx=256; prompt_tokens=7,6467840,50,,0.333,150.3,有 cache；加速比 2.10× vs 无 cache 0.698s；prefill=7.35ms
+kv_nocache_gen50,tiny; ctx=256; prompt_tokens=7,6467840,50,,0.698,71.6,无 cache；与 kv_cache_gen50 同一 prompt/同一次运行
+kv_cache_gen100,tiny; ctx=256; prompt_tokens=7,6467840,100,,0.717,139.6,有 cache；加速比 2.46× vs 无 cache 1.760s；prefill=7.35ms
+kv_nocache_gen100,tiny; ctx=256; prompt_tokens=7,6467840,100,,1.760,56.8,无 cache；与 kv_cache_gen100 同一 prompt/同一次运行
+kv_cache_gen200,tiny; ctx=256; prompt_tokens=7,6467840,200,,1.516,131.9,有 cache；加速比 2.96× vs 无 cache 4.496s；prefill=7.35ms
+kv_nocache_gen200,tiny; ctx=256; prompt_tokens=7,6467840,200,,4.496,44.5,无 cache；与 kv_cache_gen200 同一 prompt/同一次运行
+bench_pos_learned,L4/d192/H6/ctx192/B16; pos=learned; norm=layernorm; threads=8,3064128,8,,5.99,4101.3,"受控微基准：749.0 ms/step（3 轮交替中位数 [930.2, 749.0, 746.6]）；load≈19.41"
+bench_pos_rope,L4/d192/H6/ctx192/B16; pos=rope; norm=layernorm; threads=8,3027264,8,,6.17,3983.4,"受控微基准：771.2 ms/step（3 轮交替中位数 [910.8, 771.2, 767.8]）；load≈19.41"
+bench_depth_L2,L2/d192/H6/ctx192/B16; pos=learned; norm=layernorm; threads=8,2174400,8,,3.68,6672.5,"受控微基准：460.4 ms/step（3 轮交替中位数 [572.6, 453.3, 460.4]）；load≈19.41"
+bench_depth_L4,L4/d192/H6/ctx192/B16; pos=learned; norm=layernorm; threads=8,3064128,8,,6.09,4036.2,"受控微基准：761.1 ms/step（3 轮交替中位数 [909.4, 737.7, 761.1]）；load≈19.41"
+bench_depth_L6,L6/d192/H6/ctx192/B16; pos=learned; norm=layernorm; threads=8,3953856,8,,8.25,2978.7,"受控微基准：1031.3 ms/step（3 轮交替中位数 [1240.4, 1031.3, 993.3]）；load≈19.41"
+bench_threads_4,L4/d192/H6/ctx192/B16; pos=learned; norm=layernorm; threads=4,3064128,8,,7.06,3483.3,"受控微基准：881.9 ms/step（3 轮交替中位数 [1012.8, 881.9, 872.2]）；load≈19.41"
+bench_threads_8,L4/d192/H6/ctx192/B16; pos=learned; norm=layernorm; threads=8,3064128,8,,6.53,3763.0,"受控微基准：816.4 ms/step（3 轮交替中位数 [983.6, 816.4, 719.6]）；load≈19.41"
+bench_threads_12,L4/d192/H6/ctx192/B16; pos=learned; norm=layernorm; threads=12,3064128,8,,20.08,1223.6,"受控微基准：2510.6 ms/step（3 轮交替中位数 [2744.7, 2510.6, 774.5]）；load≈19.41"
+bench_threads_16,L4/d192/H6/ctx192/B16; pos=learned; norm=layernorm; threads=16,3064128,8,,32.52,755.7,"受控微基准：4065.2 ms/step（3 轮交替中位数 [4065.2, 4088.7, 3375.1]）；load≈19.41"
+bench_norm_layernorm,L4/d192/H6/ctx192/B16; pos=learned; norm=layernorm; threads=8,3064128,8,,4.63,5312.1,"受控微基准：578.3 ms/step（3 轮交替中位数 [578.3, 585.0, 557.3]）；load≈5.76"
+bench_norm_rmsnorm,L4/d192/H6/ctx192/B16; pos=learned; norm=rmsnorm; threads=8,3062592,8,,4.58,5362.5,"受控微基准：572.9 ms/step（3 轮交替中位数 [572.9, 571.9, 621.2]）；load≈5.76"

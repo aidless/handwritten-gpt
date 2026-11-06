@@ -1,0 +1,78 @@
+[run:base] params=3.06M layers=4 d=192 ctx=192 pos=learned norm=pre steps=1200
+[run:base] step 100/1200 loss=6.9641 val=6.9278 lr=1.88e-04 tok/s=2,789 elapsed=114s
+[run:base] step 200/1200 loss=6.5076 val=6.4155 lr=2.99e-04 tok/s=2,372 elapsed=265s
+[run:base] step 300/1200 loss=6.3217 val=6.2458 lr=2.88e-04 tok/s=2,559 elapsed=369s
+[run:base] step 400/1200 loss=6.1456 val=6.1121 lr=2.66e-04 tok/s=2,716 elapsed=463s
+[run:base] step 500/1200 loss=5.9866 val=5.9805 lr=2.35e-04 tok/s=2,799 elapsed=563s
+[run:base] step 600/1200 loss=5.8713 val=5.8870 lr=1.98e-04 tok/s=2,777 elapsed=681s
+[run:base] step 700/1200 loss=6.0693 val=5.8206 lr=1.57e-04 tok/s=2,793 elapsed=791s
+[run:base] step 800/1200 loss=5.8257 val=5.7759 lr=1.18e-04 tok/s=2,824 elapsed=895s
+[run:base] step 900/1200 loss=5.7999 val=5.7366 lr=8.21e-05 tok/s=2,821 elapsed=1008s
+[run:base] step 1000/1200 loss=5.8342 val=5.7164 lr=5.41e-05 tok/s=2,829 elapsed=1117s
+[run:base] step 1100/1200 loss=5.8131 val=5.6974 lr=3.62e-05 tok/s=2,870 elapsed=1211s
+[run:base] step 1200/1200 loss=5.7944 val=5.6889 lr=3.00e-05 tok/s=2,914 elapsed=1301s
+[run:base] 完成 wall=21.7min final_val=5.6889 train=5.7754 params=3.06M
+[run:rope] params=3.03M layers=4 d=192 ctx=192 pos=rope norm=pre steps=1200
+[run:rope] step 100/1200 loss=6.9540 val=6.9125 lr=1.88e-04 tok/s=3,691 elapsed=86s
+[run:rope] step 200/1200 loss=6.2667 val=6.1478 lr=2.99e-04 tok/s=3,761 elapsed=168s
+[run:rope] step 300/1200 loss=5.9932 val=5.9297 lr=2.88e-04 tok/s=3,791 elapsed=250s
+[run:rope] step 400/1200 loss=5.7818 val=5.7420 lr=2.66e-04 tok/s=3,873 elapsed=327s
+[run:rope] step 500/1200 loss=5.6535 val=5.6071 lr=2.35e-04 tok/s=3,898 elapsed=407s
+[run:rope] step 600/1200 loss=5.4458 val=5.5063 lr=1.98e-04 tok/s=3,925 elapsed=486s
+[run:rope] step 700/1200 loss=5.6900 val=5.4400 lr=1.57e-04 tok/s=3,893 elapsed=571s
+[run:rope] step 800/1200 loss=5.3942 val=5.3945 lr=1.18e-04 tok/s=3,879 elapsed=655s
+[run:rope] step 900/1200 loss=5.4057 val=5.3579 lr=8.21e-05 tok/s=3,831 elapsed=746s
+[run:rope] step 1000/1200 loss=5.4644 val=5.3310 lr=5.41e-05 tok/s=3,773 elapsed=841s
+[run:rope] step 1100/1200 loss=5.4301 val=5.3185 lr=3.62e-05 tok/s=3,707 elapsed=942s
+[run:rope] step 1200/1200 loss=5.3948 val=5.3069 lr=3.00e-05 tok/s=3,655 elapsed=1042s
+[run:rope] 完成 wall=17.4min final_val=5.3069 train=5.3748 params=3.03M
+[run:depth2] params=2.17M layers=2 d=192 ctx=192 pos=learned norm=pre steps=1200
+[run:depth2] step 100/1200 loss=7.0271 val=6.9844 lr=1.88e-04 tok/s=5,400 elapsed=59s
+[run:depth2] step 200/1200 loss=6.5327 val=6.4316 lr=2.99e-04 tok/s=4,917 elapsed=129s
+[run:depth2] step 300/1200 loss=6.3345 val=6.2610 lr=2.88e-04 tok/s=5,121 elapsed=185s
+[run:depth2] step 400/1200 loss=6.1967 val=6.1594 lr=2.66e-04 tok/s=4,117 elapsed=306s
+[run:depth2] step 500/1200 loss=6.0645 val=6.0681 lr=2.35e-04 tok/s=4,073 elapsed=387s
+[run:depth2] step 600/1200 loss=5.9695 val=6.0124 lr=1.98e-04 tok/s=4,270 elapsed=443s
+[run:depth2] step 700/1200 loss=6.1900 val=5.9621 lr=1.57e-04 tok/s=4,442 elapsed=497s
+[run:depth2] step 800/1200 loss=5.9514 val=5.9269 lr=1.18e-04 tok/s=4,597 elapsed=549s
+[run:depth2] step 900/1200 loss=5.9520 val=5.9033 lr=8.21e-05 tok/s=4,723 elapsed=602s
+[run:depth2] step 1000/1200 loss=5.9681 val=5.8838 lr=5.41e-05 tok/s=4,800 elapsed=658s
+[run:depth2] step 1100/1200 loss=5.9604 val=5.8556 lr=3.62e-05 tok/s=4,834 elapsed=719s
+[run:depth2] step 1200/1200 loss=5.9539 val=5.8595 lr=3.00e-05 tok/s=4,749 elapsed=799s
+[run:depth2] 完成 wall=13.3min final_val=5.8595 train=5.9274 params=2.17M
+[run:depth6] params=3.95M layers=6 d=192 ctx=192 pos=learned norm=pre steps=1200
+[run:depth6] step 100/1200 loss=6.9848 val=6.9574 lr=1.88e-04 tok/s=937 elapsed=336s
+[run:depth6] step 200/1200 loss=6.5026 val=6.4060 lr=2.99e-04 tok/s=706 elapsed=885s
+[run:depth6] step 300/1200 loss=6.3024 val=6.2308 lr=2.88e-04 tok/s=603 elapsed=1548s
+[run:depth6] step 400/1200 loss=6.1171 val=6.0653 lr=2.66e-04 tok/s=479 elapsed=2615s
+[run:depth6] step 500/1200 loss=5.9335 val=5.9312 lr=2.35e-04 tok/s=458 elapsed=3405s
+[run:depth6] step 600/1200 loss=5.8312 val=5.8649 lr=1.98e-04 tok/s=524 elapsed=3580s
+[run:depth6] step 700/1200 loss=6.0301 val=5.7889 lr=1.57e-04 tok/s=582 elapsed=3759s
+[run:depth6] step 800/1200 loss=5.7638 val=5.7548 lr=1.18e-04 tok/s=632 elapsed=3957s
+[run:depth6] step 900/1200 loss=5.7711 val=5.7037 lr=8.21e-05 tok/s=679 elapsed=4148s
+[run:depth6] step 1000/1200 loss=5.8069 val=5.6891 lr=5.41e-05 tok/s=724 elapsed=4324s
+[run:depth6] step 1100/1200 loss=5.7745 val=5.6609 lr=3.62e-05 tok/s=770 elapsed=4470s
+[run:depth6] step 1200/1200 loss=5.7542 val=5.6521 lr=3.00e-05 tok/s=819 elapsed=4589s
+[run:depth6] 完成 wall=76.5min final_val=5.6521 train=5.7367 params=3.95M
+[run:postln] params=3.06M layers=4 d=192 ctx=192 pos=learned norm=post steps=1200
+[run:postln] step 100/1200 loss=7.0192 val=6.9758 lr=1.88e-04 tok/s=3,559 elapsed=89s
+[run:postln] step 200/1200 loss=6.6035 val=6.5116 lr=2.99e-04 tok/s=3,584 elapsed=177s
+[run:postln] step 300/1200 loss=6.3834 val=6.3419 lr=2.88e-04 tok/s=3,649 elapsed=260s
+[run:postln] step 400/1200 loss=6.2369 val=6.2267 lr=2.66e-04 tok/s=3,680 elapsed=344s
+[run:postln] step 500/1200 loss=6.1087 val=6.1283 lr=2.35e-04 tok/s=3,654 elapsed=433s
+[run:postln] step 600/1200 loss=5.9925 val=6.0566 lr=1.98e-04 tok/s=3,604 elapsed=527s
+[run:postln] step 700/1200 loss=6.1988 val=5.9845 lr=1.57e-04 tok/s=3,610 elapsed=613s
+[run:postln] step 800/1200 loss=5.9461 val=5.9344 lr=1.18e-04 tok/s=3,633 elapsed=697s
+[run:postln] step 900/1200 loss=5.9204 val=5.8716 lr=8.21e-05 tok/s=3,567 elapsed=798s
+[run:postln] step 1000/1200 loss=5.9219 val=5.8450 lr=5.41e-05 tok/s=3,511 elapsed=901s
+[run:postln] step 1100/1200 loss=5.9189 val=5.8175 lr=3.62e-05 tok/s=3,484 elapsed=998s
+[run:postln] step 1200/1200 loss=5.8986 val=5.8109 lr=3.00e-05 tok/s=3,485 elapsed=1088s
+[run:postln] 完成 wall=18.1min final_val=5.8109 train=5.8788 params=3.06M
+[ablate] 汇总已写入 experiments/ablations/summary.csv
+name,pos_emb,n_layer,norm,steps_done,num_params,final_val_loss,final_train_loss,train_eval_loss,wall_clock_s,tokens_per_s,convergence_step_95pct,diverged
+base,learned,4,pre,1200,3064128,5.6889,5.7754,5.6752,1301,2914,900,False
+rope,rope,4,pre,1200,3027264,5.3069,5.3748,5.3055,1042,3655,900,False
+depth2,learned,2,pre,1200,2174400,5.8595,5.9274,5.8431,799,4749,900,False
+depth6,learned,6,pre,1200,3953856,5.6521,5.7367,5.6413,4589,819,900,False
+postln,learned,4,post,1200,3064128,5.8109,5.8788,5.7941,1088,3485,1000,False
+

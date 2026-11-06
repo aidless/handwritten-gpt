@@ -1,0 +1,12 @@
+# 本地训练产物（checkpoint/日志/meta）：不入库，避免仓库体积膨胀
+.local_runs/
+*.pt
+
+# 原始语料缓存：43k 个小文件，进 git 会拖慢 clone/checkout；复现只依赖 data/corpus.txt 与 data/vocab.json
+data/raw/
+
+# Python 生成物
+__pycache__/
+
+# 面向未来：本机内存已实测跑不了 xl 的 fp32（available 7.9 GB vs RSS 8.3–8.4 GB，四次 rc=137）；
+# 之后若要跑 xl 或更大档，产物必须落在 .local_runs/ 或仓库外的磁盘路径，不要进仓库。

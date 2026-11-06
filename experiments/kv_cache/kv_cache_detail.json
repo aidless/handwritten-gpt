@@ -1,0 +1,53 @@
+{
+  "checkpoint": "experiments/tiny/tiny.pt",
+  "prompt": "春江潮水连海平",
+  "config": {
+    "vocab_size": 6497,
+    "block_size": 256,
+    "n_layer": 6,
+    "n_head": 8,
+    "n_embd": 256,
+    "dropout": 0.1,
+    "pos_emb": "learned",
+    "norm_placement": "pre",
+    "bias": true
+  },
+  "prefill_ms": 7.354000001214445,
+  "cache_correct": true,
+  "cache_bytes_full_seq": 2543616,
+  "cache_bytes_per_layer_per_token": 12288,
+  "rows": [
+    {
+      "prompt": "春江潮水连海平",
+      "new_tokens": 50,
+      "cache_s": 0.33261528499861015,
+      "nocache_s": 0.6984181439984241,
+      "cache_tokens_per_s": 150.3238193043622,
+      "nocache_tokens_per_s": 71.5903508945965,
+      "speedup": 2.099777657546142
+    },
+    {
+      "prompt": "春江潮水连海平",
+      "new_tokens": 100,
+      "cache_s": 0.7165069430047879,
+      "nocache_s": 1.7595380659986404,
+      "cache_tokens_per_s": 139.5659888243843,
+      "nocache_tokens_per_s": 56.833098375308055,
+      "speedup": 2.4557167005524505
+    },
+    {
+      "prompt": "春江潮水连海平",
+      "new_tokens": 200,
+      "cache_s": 1.5164909529994475,
+      "nocache_s": 4.496384081998258,
+      "cache_tokens_per_s": 131.88341124252844,
+      "nocache_tokens_per_s": 44.48018593445361,
+      "speedup": 2.964992354952675
+    }
+  ],
+  "cache_decode_ms_first50": 6.25440800038632,
+  "cache_decode_ms_last50": 9.917741380049847,
+  "nocache_decode_ms_first50": 23.130048180173617,
+  "nocache_decode_ms_last50": 22.72326799997245,
+  "rss_mb": 558.32421875
+}
