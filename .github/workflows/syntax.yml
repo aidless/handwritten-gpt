@@ -1,0 +1,34 @@
+name: syntax check (compileall, no tests)
+
+# This repo has no test suite. This workflow only byte-compiles every module,
+# so it catches syntax errors and nothing else. It does NOT prove the model or
+# the training loop is correct, and it does NOT install torch — installing the
+# runtime dependencies would add minutes to every push without testing anything.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  compile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile every module (syntax only)
+        run: |
+          echo "compileall checks syntax; it does not import torch and does not run anything."
+          python -m compileall -q .
+          echo "all modules compiled"
