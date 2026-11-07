@@ -199,7 +199,7 @@ def _save_ckpt(path: Path, model, opt, step: int, steps_total: int, cfg_dict: di
 def run(cfg_dict: dict, seed: int, out_dir: Path, tag: str, pos_emb: str, norm: str,
         steps: int | None = None, dropout: float | None = None,
         norm_type: str = "layernorm", device: str = "cpu", amp_dtype=None,
-        resume: bool = False, ckpt_every: int = 500) -> dict:
+        resume: bool = False, ckpt_every: int = 500, grad_ckpt: bool = False) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     steps = steps or cfg_dict["steps"]
     if dropout is not None:
@@ -222,6 +222,7 @@ def run(cfg_dict: dict, seed: int, out_dir: Path, tag: str, pos_emb: str, norm: 
         pos_emb=pos_emb,
         norm_placement=norm,
         norm_type=norm_type,
+        grad_ckpt=grad_ckpt,
     )
     model = GPT(cfg).to(device)
     model.train()
@@ -355,6 +356,7 @@ def run(cfg_dict: dict, seed: int, out_dir: Path, tag: str, pos_emb: str, norm: 
         "config": cfg.__dict__,
         "preset": cfg_dict,
         "seed": seed,
+        "grad_ckpt": bool(grad_ckpt),
         "steps_planned": steps,
         "steps_done": len(loss_history),
         "num_params": n_params,
@@ -403,6 +405,8 @@ def main():
     ap.add_argument("--resume", action="store_true",
                     help="从 {tag}_ckpt.pt 续跑；CSV 自动截断到断点步数后追加（默认关闭）")
     ap.add_argument("--ckpt-every", type=int, default=500, help="每 N 步存断点；0 = 关闭")
+    ap.add_argument("--grad-ckpt", action="store_true",
+                    help="激活重计算（省显存；默认关。开启前必须过 50 步 A/B 等价性验证）")
     args = ap.parse_args()
 
     cfg_dict = dict(PRESETS[args.preset])
@@ -421,7 +425,7 @@ def main():
     amp_dtype = None if args.dtype == "fp32" else torch.bfloat16
     run(cfg_dict, args.seed, out_dir, tag, pos_emb, norm, steps=args.steps, dropout=args.dropout,
         norm_type=args.norm_type, device=args.device, amp_dtype=amp_dtype,
-        resume=args.resume, ckpt_every=args.ckpt_every)
+        resume=args.resume, ckpt_every=args.ckpt_every, grad_ckpt=args.grad_ckpt)
 
 
 if __name__ == "__main__":

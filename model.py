@@ -40,6 +40,7 @@ class GPTConfig:
     norm_placement: str = "pre"    # pre | post
     norm_type: str = "layernorm"   # layernorm | rmsnorm（Zhang & Sennrich 2019）
     bias: bool = True              # Linear/LayerNorm 是否带偏置（GPT-2 带）
+    grad_ckpt: bool = False        # 激活重计算（省显存，训练时每层不存中间激活）
 
     def __post_init__(self):
         assert self.n_embd % self.n_head == 0, "n_embd 必须能被 n_head 整除"
@@ -303,7 +304,16 @@ class GPT(nn.Module):
         x = self.drop(x)
 
         new_caches = [] if kv_cache is not None else None
+        # 激活重计算：只在训练且不用 KV cache 时启用；preserve_rng_state=True 保证重跑时的
+        # dropout 掩码与首次前向一致。等价性需实测：同 seed、同数据序、dropout=0.1 做
+        # 50 步 A/B，逐行比 train_loss 的 max|Δ| 与 state_dict 是否逐张量相等
+        use_ckpt = self.cfg.grad_ckpt and self.training and kv_cache is None
         for i, block in enumerate(self.blocks):
+            if use_ckpt:
+                x = torch.utils.checkpoint.checkpoint(
+                    block, x, None, pos_offset, self.rope,
+                    use_reentrant=False, preserve_rng_state=True)[0]
+                continue
             c = kv_cache[i] if (kv_cache is not None and i < len(kv_cache)) else None
             x, new_c = block(x, c, pos_offset, self.rope)
             if kv_cache is not None:
