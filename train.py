@@ -173,9 +173,33 @@ def plot_curves(csv_path: Path, png_path: Path, title: str) -> None:
     plt.close()
 
 
+def _save_ckpt(path: Path, model, opt, step: int, steps_total: int, cfg_dict: dict, seed: int,
+               device: str, rng, tokens: int, t_train: float,
+               loss_history: list, val_history: list) -> None:
+    """原子写断点：model + Adam(m/v/t) + step + 三套 RNG（含数据批 RNG），供 --resume 续跑。
+
+    先写 .tmp 再 os.replace，避免崩溃时留下半截文件把续跑带偏。
+    """
+    payload = {
+        "model": model.state_dict(),
+        "opt_m": opt.m, "opt_v": opt.v, "opt_t": opt.t,
+        "step": step, "steps_total": steps_total,
+        "cfg_dict": cfg_dict, "seed": seed,
+        "rng_torch": torch.get_rng_state(),
+        "rng_cuda": torch.cuda.get_rng_state_all() if device.startswith("cuda") else [],
+        "rng_np": rng.bit_generator.state,
+        "tokens": tokens, "t_train": t_train,
+        "loss_history": loss_history, "val_history": val_history,
+    }
+    tmp = str(path) + ".tmp"
+    torch.save(payload, tmp)
+    os.replace(tmp, path)
+
+
 def run(cfg_dict: dict, seed: int, out_dir: Path, tag: str, pos_emb: str, norm: str,
         steps: int | None = None, dropout: float | None = None,
-        norm_type: str = "layernorm", device: str = "cpu", amp_dtype=None) -> dict:
+        norm_type: str = "layernorm", device: str = "cpu", amp_dtype=None,
+        resume: bool = False, ckpt_every: int = 500) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     steps = steps or cfg_dict["steps"]
     if dropout is not None:
@@ -203,29 +227,62 @@ def run(cfg_dict: dict, seed: int, out_dir: Path, tag: str, pos_emb: str, norm: 
     model.train()
     opt = AdamW(model.parameters(), weight_decay=cfg_dict["weight_decay"])
 
+    # ---- 断点续跑（--resume，默认关闭，不改既有行为）----
+    ckpt_path = out_dir / f"{tag}_ckpt.pt"
+    start_step, tokens, t_train = 0, 0, 0.0
+    loss_history, val_history = [], []
+    if resume and ckpt_path.exists():
+        # map_location="cpu"：RNG 状态是 CPU ByteTensor，跟着 model 一起 map 到 cuda 会导致 set_rng_state 失败
+        ck = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+        if int(ck["steps_total"]) != steps:
+            raise RuntimeError(f"ckpt 的 steps_total={ck['steps_total']} 与本次 steps={steps} 不一致，拒绝续跑")
+        model.load_state_dict(ck["model"])
+        opt.m = [x.to(device) for x in ck["opt_m"]]
+        opt.v = [x.to(device) for x in ck["opt_v"]]
+        opt.t = int(ck["opt_t"])
+        start_step = int(ck["step"])
+        tokens = int(ck["tokens"])
+        t_train = float(ck["t_train"])
+        loss_history = list(ck["loss_history"])
+        val_history = list(ck["val_history"])
+        torch.set_rng_state(ck["rng_torch"].cpu().to(torch.uint8))
+        if device.startswith("cuda"):
+            torch.cuda.set_rng_state_all([t.cpu().to(torch.uint8) for t in ck["rng_cuda"]])
+        rng.bit_generator.state = ck["rng_np"]
+        print(f"[run:{tag}] RESUME step={start_step}/{steps} tokens={tokens}", flush=True)
+
     val_batches = data_lib.fixed_eval_batches(ds["val"], cfg_dict["batch_size"], cfg.block_size, n_batches=10)
     train_eval_batches = data_lib.fixed_eval_batches(ds["train"], cfg_dict["batch_size"], cfg.block_size, n_batches=10, seed=777)
 
     csv_path = out_dir / f"{tag}.csv"
-    log_csv = csv_path.open("w", newline="")
-    writer = csv.writer(log_csv)
-    writer.writerow(["step", "lr", "train_loss", "grad_norm", "val_loss", "elapsed_s", "tokens_per_s"])
+    header = ["step", "lr", "train_loss", "grad_norm", "val_loss", "elapsed_s", "tokens_per_s"]
+    if start_step > 0 and csv_path.exists():
+        # 续跑：先截断到 ckpt 步数再追加，保证 CSV 不重复
+        keep = [r for r in csv.DictReader(csv_path.open()) if int(r["step"]) <= start_step]
+        log_csv = csv_path.open("w", newline="")
+        writer = csv.writer(log_csv)
+        writer.writerow(header)
+        for r in keep:
+            writer.writerow([r[k] for k in header])
+        log_csv.flush()
+        log_csv = csv_path.open("a", newline="")
+        writer = csv.writer(log_csv)
+    else:
+        log_csv = csv_path.open("w", newline="")
+        writer = csv.writer(log_csv)
+        writer.writerow(header)
 
     n_params = model.num_parameters()
     print(f"[run:{tag}] params={n_params/1e6:.2f}M layers={cfg.n_layer} d={cfg.n_embd} "
           f"ctx={cfg.block_size} pos={cfg.pos_emb} norm={cfg.norm_placement}/{cfg.norm_type} "
           f"steps={steps}")
 
-    t_start = time.perf_counter()
-    t_train = 0.0
-    tokens = 0
-    loss_history = []
-    val_history = []
+    t_start = time.perf_counter() - t_train   # 续跑时 elapsed_s 继续累计（不含重启停机空档）
     diverged = False
     if device.startswith("cuda"):
         torch.cuda.reset_peak_memory_stats()   # 显存峰值按「本次训练」计
 
-    for step in range(steps):
+    for step in range(start_step, steps):
         lr = lr_at(step, cfg_dict["lr"], cfg_dict["warmup"], steps)
         x, y = data_lib.get_batch(ds["train"], cfg_dict["batch_size"], cfg.block_size, rng)
         x, y = x.to(device), y.to(device)
@@ -260,11 +317,16 @@ def run(cfg_dict: dict, seed: int, out_dir: Path, tag: str, pos_emb: str, norm: 
             log_csv.flush()   # 周期性刷盘，防止长训练中途崩溃丢日志
         elif (step + 1) % 5 == 0:
             log_csv.flush()   # 短程探测也要能边跑边看
+        if ckpt_every and (step + 1) % ckpt_every == 0:
+            _save_ckpt(ckpt_path, model, opt, step + 1, steps, cfg_dict, seed, device,
+                       rng, tokens, t_train, loss_history, val_history)
         if (step + 1) % 100 == 0 or step == steps - 1:
             print(f"[run:{tag}] step {step+1}/{steps} loss={loss_val:.4f} "
                   f"val={val_loss or '-'} lr={lr:.2e} tok/s={tokens/max(t_train,1e-9):,.0f} "
                   f"elapsed={elapsed:.0f}s")
     log_csv.close()
+    if ckpt_path.exists():
+        ckpt_path.unlink()   # 正常跑完即删断点，只保留最终 .pt（避免每格多占 GB 级磁盘）
 
     wall = time.perf_counter() - t_start
     # 训练段（不含 eval/采样）的显存峰值：判断这一档在当前卡上能不能装下就看它
@@ -338,6 +400,9 @@ def main():
     ap.add_argument("--threads", type=int, default=None)
     ap.add_argument("--device", default="cpu", choices=["cpu", "cuda"])
     ap.add_argument("--dtype", default="fp32", choices=["fp32", "bf16"])
+    ap.add_argument("--resume", action="store_true",
+                    help="从 {tag}_ckpt.pt 续跑；CSV 自动截断到断点步数后追加（默认关闭）")
+    ap.add_argument("--ckpt-every", type=int, default=500, help="每 N 步存断点；0 = 关闭")
     args = ap.parse_args()
 
     cfg_dict = dict(PRESETS[args.preset])
@@ -355,7 +420,8 @@ def main():
 
     amp_dtype = None if args.dtype == "fp32" else torch.bfloat16
     run(cfg_dict, args.seed, out_dir, tag, pos_emb, norm, steps=args.steps, dropout=args.dropout,
-        norm_type=args.norm_type, device=args.device, amp_dtype=amp_dtype)
+        norm_type=args.norm_type, device=args.device, amp_dtype=amp_dtype,
+        resume=args.resume, ckpt_every=args.ckpt_every)
 
 
 if __name__ == "__main__":
