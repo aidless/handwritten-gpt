@@ -1,0 +1,36 @@
+name: model forward (CPU, tiny config)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  forward:
+    # 钉 24.04：ubuntu-latest 已是 26.04，而 actions/python-versions 对 3.12 虽仍发布，
+    # 但没必要赌 runner 镜像漂移。
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # 只装 CPU wheel：默认 PyPI 的 torch 会连带 nvidia-* 依赖，体积从几百 MB 涨到 2GB+，
+      # 而这个测试跑在 CPU 上，不需要 CUDA。
+      - name: Install CPU torch
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.0.0"
+          python -m pip install pytest numpy
+
+      - name: Forward shape/dtype tests
+        run: python -m pytest tests -q
