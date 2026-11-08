@@ -1,6 +1,9 @@
 # 本地训练产物（checkpoint/日志/meta）：不入库，避免仓库体积膨胀
 .local_runs/
 *.pt
+*.safetensors
+*.bin
+*.ckpt
 
 # 原始语料缓存：43k 个小文件，进 git 会拖慢 clone/checkout；复现只依赖 data/corpus.txt 与 data/vocab.json
 data/raw/
