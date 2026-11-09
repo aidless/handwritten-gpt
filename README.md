@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/aidless/handwritten-gpt/actions/workflows/model-forward.yml/badge.svg)](https://github.com/aidless/handwritten-gpt/actions/workflows/model-forward.yml)
 
+> **English TL;DR**: A character-level GPT written from scratch on pure CPU: attention, FFN, normalization, positional encodings (including RoPE), AdamW, scheduling, and KV cache are all hand-implemented, trained on a Tang-poetry corpus (6.47M parameters, val 4.9938). Run `python train.py --preset tiny`, `python ablate.py`, and `kv_cache_bench.py`. It quantifies structural choices at small compute — ablations over position encoding, depth, and norm placement, plus KV-cache speedups verified bit-identical — while explicitly disclaiming practical generation quality.
+
 **一句话定位**：在纯 CPU 上从空文件手写一个字符级 GPT —— attention / FFN / LayerNorm / 位置编码 / 训练循环 / AdamW / 学习率调度 / 梯度裁剪 / KV cache 全部自己实现，重点不是刷分数，而是「小算力下把结构选择、消融和推理加速量化清楚」。
 
 硬件：AMD Ryzen 7 5800H（8 核 16 线程），**无 GPU**，`torch.set_num_threads(8)`（§8 有理由和实测）。另有一张海光 DCU（16 GB）用于 device 对照，见 §9。
