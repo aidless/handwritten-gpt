@@ -1,5 +1,7 @@
 # handwritten-gpt
 
+[![CI](https://github.com/aidless/handwritten-gpt/actions/workflows/model-forward.yml/badge.svg)](https://github.com/aidless/handwritten-gpt/actions/workflows/model-forward.yml)
+
 **一句话定位**：在纯 CPU 上从空文件手写一个字符级 GPT —— attention / FFN / LayerNorm / 位置编码 / 训练循环 / AdamW / 学习率调度 / 梯度裁剪 / KV cache 全部自己实现，重点不是刷分数，而是「小算力下把结构选择、消融和推理加速量化清楚」。
 
 硬件：AMD Ryzen 7 5800H（8 核 16 线程），**无 GPU**，`torch.set_num_threads(8)`（§8 有理由和实测）。另有一张海光 DCU（16 GB）用于 device 对照，见 §9。
