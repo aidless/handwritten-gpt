@@ -87,6 +87,10 @@ python train.py --preset tiny --norm-type rmsnorm --tag rmsnorm --out-dir experi
 
 ## 4. 主实验训练结果
 
+![all experiments](docs/experiments.png)
+
+*图：`experiments/summary.csv` 全部 25 行 run 里有最终 val loss 的 8 个（2026-11-10 由该 CSV 重算绘制；空 val 行是中途夭折或只跑微基准的 run，不画）。*
+
 配置：batch 12 × 256 token = 3,072 token/step，3,000 步（共 9.216M token，≈3.1 epoch）；warmup 200 步 + cosine 衰减到峰值 lr 的 10%；lr 峰值 3e-4；AdamW(β=0.9/0.95, wd=0.1)；全局梯度裁剪 1.0。
 
 | 指标 | 值 |
